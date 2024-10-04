@@ -214,3 +214,113 @@ jobs:
 - **Rapid Feedback**: Implementing feedback loops helps identify and address issues quickly, enhancing the overall quality of software and data products.
 - **Automation**: Automating processes within these loops minimizes manual intervention and reduces errors.
 - **Collaboration**: Feedback loops promote collaboration among teams, fostering a culture of continuous improvement and responsiveness to change.
+
+### Demonstration: Setting Up a Basic CI/CD Pipeline with Jenkins
+
+In this demonstration, we'll set up a basic CI/CD pipeline using **Jenkins** that includes the following stages:
+
+1. **Automated Build Stage** – Builds the project.
+2. **Automated Test Stage** – Runs unit tests to verify the functionality.
+
+We'll assume that you have Jenkins already installed and running on your server or local machine. If not, the installation steps can be found [here](https://www.jenkins.io/doc/book/installing/).
+
+#### **Prerequisites**:
+
+- Jenkins installed and running.
+- A source code repository (e.g., GitHub, GitLab) with a simple application (e.g., a Node.js project).
+- Basic knowledge of Jenkins Pipelines and `Jenkinsfile`.
+
+---
+
+### **Step 1: Create a Jenkins Pipeline Job**
+
+1. **Log in to Jenkins** and navigate to the **Dashboard**.
+2. Click on **New Item** in the left sidebar.
+3. Enter an item name (e.g., `Basic-Pipeline`) and select **Pipeline**.
+4. Click **OK** to create the new pipeline job.
+
+### **Step 2: Configure the Pipeline to Use a Source Code Repository**
+
+1. In the pipeline configuration page, scroll down to the **Pipeline** section.
+2. Select **Pipeline script from SCM**.
+3. Choose **Git** as the SCM option.
+4. Enter the **Repository URL** for your source code (e.g., `https://github.com/username/sample-nodejs-app.git`).
+5. Specify the branch to build (e.g., `main` or `master`).
+
+### **Step 3: Create a `Jenkinsfile` in Your Repository**
+
+Create a `Jenkinsfile` in the root directory of your repository. This file defines the stages of the pipeline. Here's a sample `Jenkinsfile` for a Node.js project that includes build and test stages:
+
+```groovy
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                // Install dependencies using npm
+                script {
+                    echo 'Starting Build Stage...'
+                    sh 'npm install'
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                // Run unit tests using npm
+                script {
+                    echo 'Starting Test Stage...'
+                    sh 'npm test'
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            // Archive test results and reports
+            junit '**/test-reports/*.xml'
+            echo 'Pipeline Execution Complete.'
+        }
+
+        success {
+            echo 'Build and Tests Successful!'
+        }
+
+        failure {
+            echo 'Pipeline Failed!'
+        }
+    }
+}
+```
+
+**Explanation**:
+
+- The pipeline consists of two stages:
+  - **Build Stage**: Installs dependencies using `npm install`.
+  - **Test Stage**: Runs unit tests using `npm test`.
+- The `post` block handles actions after the stages have executed:
+  - Archives the test results and prints the status of the pipeline (success or failure).
+
+### **Step 4: Save and Run the Jenkins Pipeline Job**
+
+1. Save the pipeline configuration in Jenkins.
+2. Navigate to the job and click on **Build Now**.
+3. Observe the pipeline execution in the **Build History** section.
+
+### **Step 5: Monitor the Pipeline Execution**
+
+1. Click on the running build in the **Build History**.
+2. Go to the **Console Output** to monitor the build and test stages.
+3. You should see the pipeline executing the following steps:
+   - Checking out the code from the repository.
+   - Running `npm install` to install dependencies.
+   - Running `npm test` to execute unit tests.
+
+### **Step 6: Review Test Results**
+
+1. Once the build is complete, go to the **Pipeline Steps** view.
+2. Click on the **Test Result** to see a detailed report of passed and failed tests (if any).
+
+---
